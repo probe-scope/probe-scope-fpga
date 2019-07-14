@@ -2,3 +2,5 @@
 .setting.ini
 .spread_sheet.ini
 impl1/
+.recovery
+msg_file.log

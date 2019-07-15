@@ -4,3 +4,5 @@
 impl1/
 .recovery
 msg_file.log
+.spreadsheet_view.ini
+reportview.xml

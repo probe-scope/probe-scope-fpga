@@ -6,3 +6,6 @@ impl1/
 msg_file.log
 .spreadsheet_view.ini
 reportview.xml
+probescope_tcr.dir/
+probescope_tcl.html
+promote.xml

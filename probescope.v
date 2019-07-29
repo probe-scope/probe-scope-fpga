@@ -1,21 +1,21 @@
 module probescope (
-	//input adc_d0a,
-	//input adc_d0b,
-	//input adc_d1a,
-	//input adc_d1b,
-	//input adc_d2a,
-	//input adc_d2b,
-	//input adc_d3a,
-	//input adc_d3b,
-	//input adc_d4a,
-	//input adc_d4b,
-	//input adc_d5a,
-	//input adc_d5b,
-	//input adc_d6a,
-	//input adc_d6b,
-	//input adc_d7a,
-	//input adc_d7b,
-	input adc_dco,
+	input wire adc_d0a,
+	input wire adc_d0b,
+	input wire adc_d1a,
+	input wire adc_d1b,
+	input wire adc_d2a,
+	input wire adc_d2b,
+	input wire adc_d3a,
+	input wire adc_d3b,
+	input wire adc_d4a,
+	input wire adc_d4b,
+	input wire adc_d5a,
+	input wire adc_d5b,
+	input wire adc_d6a,
+	input wire adc_d6b,
+	input wire adc_d7a,
+	input wire adc_d7b,
+	input wire adc_dco,
 	
 	//inout mem_d0,
 	//inout mem_d1,
@@ -31,18 +31,18 @@ module probescope (
 	//output mem_psc,
 	output mem_ck,
 	
-	//output pmd0,
-	//output pmd1,
-	//output pmd2,
-	//output pmd3,
-	//output pmd4,
-	//output pmd5,
-	//output pmd6,
-	//output pmd7,
+	output pmd0,
+	output pmd1,
+	output pmd2,
+	output pmd3,
+	output pmd4,
+	output pmd5,
+	output pmd6,
+	output pmd7,
 	//input pmenb,
 	//input pmwrn,
-	//input pmdc,
-	//input pmcs1,
+	input wire pmdc,
+	output pmcs1,
 	
 	//input sck3,
 	//output sdi3,
@@ -76,6 +76,19 @@ module probescope (
 RAM_PLL ram_pll(adc_dco, mem_ck);
 
 reg [32:0] counter;
+
+wire [7:0] adc_data;
+
+wire ADC_CLK;
+wire decim_clk;
+
+ADC_Aqu ADC_A(adc_dco, adc_d0a, adc_d0b, adc_d1a, adc_d1b, adc_d2a, adc_d2b, adc_d3a, adc_d3b, adc_d4a, adc_d4b, adc_d5a, adc_d5b, adc_d6a, adc_d6b, adc_d7a, adc_d7b, 8'h0, adc_data, decim_clk);
+pic_simple out(.adc_data(adc_data), .decim_clk(decim_clk), .pmp_d0(pmd0), .pmp_d1(pmd1), .pmp_d2(pmd2), .pmp_d3(pmd3), .pmp_d4(pmd4), .pmp_d5(pmd5), .pmp_d6(pmd6), .pmp_d7(pmd7), .pmp_dreq(pmdc), .pmp_drdy(pmcs1));
+
+
+//ADC_PLL A_PLL(adc_dco, ADC_CLK);
+
+//ADC_FIFO ADC_F (adc_data, ADC_CLK);
 
 always @(posedge mem_ck) begin
     counter <= counter + 1;

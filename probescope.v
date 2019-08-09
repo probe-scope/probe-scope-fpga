@@ -52,8 +52,8 @@ module probescope (
 	//input fdio0,
 	//output fdio1,
 	
-	//inout fpio0,
-	//inout fpio1,
+	output fpio0,
+	input fpio1,
 	//inout fpio2,
 	//inout fpio3,
 	//inout fpio4,
@@ -84,6 +84,7 @@ wire decim_clk;
 
 ADC_Aqu ADC_A(adc_dco, adc_d0a, adc_d0b, adc_d1a, adc_d1b, adc_d2a, adc_d2b, adc_d3a, adc_d3b, adc_d4a, adc_d4b, adc_d5a, adc_d5b, adc_d6a, adc_d6b, adc_d7a, adc_d7b, 8'h0, adc_data, decim_clk);
 pic_simple out(.adc_data(adc_data), .decim_clk(decim_clk), .pmp_d0(pmd0), .pmp_d1(pmd1), .pmp_d2(pmd2), .pmp_d3(pmd3), .pmp_d4(pmd4), .pmp_d5(pmd5), .pmp_d6(pmd6), .pmp_d7(pmd7), .pmp_dreq(pmdc), .pmp_drdy(pmcs1));
+Trigger trigger (decim_clk, fpio1, adc_data, 8'h0, fpio0);
 
 
 //ADC_PLL A_PLL(adc_dco, ADC_CLK);

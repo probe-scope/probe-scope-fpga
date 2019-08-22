@@ -9,17 +9,31 @@
         <Source name="ram_pll.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
-        <Source name="impl1/impl1.xcf" type="Programming Project File" type_short="Programming">
         <Source name="ADC_Aqu.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
-        <Source name="ADC_FIFO.v" type="Verilog" type_short="Verilog">
+        <Source name="ADC_FIFO.v" type="Verilog" type_short="Verilog" excluded="TRUE">
             <Options/>
         </Source>
         <Source name="ADC_PLL.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
         <Source name="pic_simple.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="spi_regs.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="Trigger.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="alt_fifo.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="lut_fifo.v" type="Verilog" type_short="Verilog" excluded="TRUE">
+            <Options/>
+        </Source>
+        <Source name="impl1/impl1.xcf" type="Programming Project File" type_short="Programming">
             <Options/>
         </Source>
         <Source name="probescope.lpf" type="Logic Preference" type_short="LPF">

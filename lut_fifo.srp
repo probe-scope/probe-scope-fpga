@@ -1,0 +1,44 @@
+SCUBA, Version Diamond (64-bit) 3.11.0.396.4
+Tue Aug 13 10:55:42 2019
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2019 Lattice Semiconductor Corporation,  All rights reserved.
+
+    Issued command   : C:\lscc\diamond\3.11_x64\ispfpga\bin\nt64\scuba.exe -w -n lut_fifo -lang verilog -synth lse -bus_exp 7 -bl -arch xo2c00 -type ebfifo -depth 4096 -width 8 -rwidth 8 -pfu_fifo -regout -resetmode ASYNC -reset_rel SYNC -no_enable -pe 10 -pf 4000 
+    Circuit name     : lut_fifo
+    Module type      : ebfifo
+    Module Version   : 5.8
+    Ports            : 
+	Inputs       : Data[0:7], WrClock, RdClock, WrEn, RdEn, Reset, RPReset
+	Outputs      : Q[0:7], Empty, Full, AlmostEmpty, AlmostFull
+    I/O buffer       : not inserted
+    EDIF output      : lut_fifo.edn
+    Verilog output   : lut_fifo.v
+    Verilog template : lut_fifo_tmpl.v
+    Verilog testbench: tb_lut_fifo_tmpl.v
+    Verilog purpose  : for synthesis and simulation
+    Bus notation     : little endian
+    Report output    : lut_fifo.srp
+    Element Usage    :
+          AGEB2 : 28
+           AND2 : 2
+            CU2 : 28
+         FADD2B : 12
+        FD1P3BX : 8
+        FD1P3DX : 112
+        FD1S3BX : 2
+        FD1S3DX : 54
+            INV : 10
+          MUX81 : 8
+         MUX321 : 64
+            OR2 : 1
+       ROM16X1A : 806
+       DPR16X4C : 512
+           XOR2 : 24
+    Estimated Resource Usage:
+            LUT : 1497
+           DRAM : 512
+            Reg : 176

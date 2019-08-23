@@ -52,65 +52,132 @@ module probescope (
 	//input fdio0,
 	//output fdio1,
 	
-	output fpio0,
+	output reg fpio0,
 	input fpio1,
-	//inout fpio2,
+	output reg fpio2,
 	//inout fpio3,
 	//inout fpio4,
 	
-	//inout fxio0,
-	//inout fxio1,
-	//inout fxio2,
-	//inout fxio3,
-	//inout fxio4,
-	//inout fxio5,
-	//inout fxio6,
-	//inout fxio7,
+	output fxio0,
+	output fxio1,
+	output fxio2,
+	output fxio3,
+	output fxio4,
+	output fxio5,
+	output fxio6,
+	output fxio7,
 	
 	input fpga_sw,
 	output reg fled0,
-	output reg fled1,
-	output reg fled2
+	output fled1,
+	output fled2
 );
 
-RAM_PLL ram_pll(adc_dco, mem_ck);
+//RAM_PLL ram_pll(adc_dco, mem_ck);
 
 reg [32:0] counter;
 
-wire [7:0] adc_data;
+reg [15:0] samples_in   = 16'h0000;
+reg [15:0] samples_left = 16'hFFFF;
+reg [15:0] samples_out  = 16'h0000;
+
+wire [7:0] adc_data, good_data;
 
 wire ADC_CLK;
 wire decim_clk;
+wire trig;
+wire adc_dbl;
 
-ADC_Aqu ADC_A(adc_dco, adc_d0a, adc_d0b, adc_d1a, adc_d1b, adc_d2a, adc_d2b, adc_d3a, adc_d3b, adc_d4a, adc_d4b, adc_d5a, adc_d5b, adc_d6a, adc_d6b, adc_d7a, adc_d7b, 8'h0, adc_data, decim_clk);
-pic_simple out(.adc_data(adc_data), .decim_clk(decim_clk), .pmp_d0(pmd0), .pmp_d1(pmd1), .pmp_d2(pmd2), .pmp_d3(pmd3), .pmp_d4(pmd4), .pmp_d5(pmd5), .pmp_d6(pmd6), .pmp_d7(pmd7), .pmp_dreq(pmdc), .pmp_drdy(pmcs1));
-Trigger trigger (decim_clk, fpio1, adc_data, 8'h0, fpio0);
+wire wren, rdinter, rden;
+assign wren = (samples_left > 16'h0);
+assign rden = (fpio2 & (samples_out < 16'd8192));
+
+assign pmcs1 = 1;
+
+reg reset_so = 0;
+
+assign fxio0 = 0;
+assign fxio1 = 0;
+assign fxio2 = 0;
+assign fxio3 = 0;
+assign fxio4 = 0;
+assign fxio5 = 0;
+assign fxio6 = 0;
+assign fxio7 = 0;
+
+assign fled1 = fpio0;
+assign fled2 = fpio1;
+
+ADC_PLL doubler(adc_dco, adc_dbl);
+ADC_Aqu ADC_A(adc_dbl, adc_dco, adc_d0a, adc_d0b, adc_d1a, adc_d1b, adc_d2a, adc_d2b, adc_d3a, adc_d3b, adc_d4a, adc_d4b, adc_d5a, adc_d5b, adc_d6a, adc_d6b, adc_d7a, adc_d7b, 16'h0010, adc_data, decim_clk);
+Sample_Data SD(adc_data, decim_clk, pmdc, wren, rden, 1'b0, 1'b0, good_data);
+pic_simple out(.adc_data(good_data), .decim_clk(decim_clk), .pmp_d0(pmd0), .pmp_d1(pmd1), .pmp_d2(pmd2), .pmp_d3(pmd3), .pmp_d4(pmd4), .pmp_d5(pmd5), .pmp_d6(pmd6), .pmp_d7(pmd7), .pmp_dreq(pmdc));
+Trigger trigger (decim_clk, fpio1, adc_data, 8'h0, trig);
 
 
-//ADC_PLL A_PLL(adc_dco, ADC_CLK);
-
-//ADC_FIFO ADC_F (adc_data, ADC_CLK);
-
-always @(posedge mem_ck) begin
+always @(posedge adc_dbl) begin
     counter <= counter + 1;
-    if (counter > 82000000) begin
+    if (counter > 125000000) begin
         counter <= 0;
         if (fled0) begin
             fled0 <= 0;
-            fled2 <= 1;
         end
         else begin
             fled0 <= 1;
-            fled2 <= 0;
         end
     end
+	
+    if (~fpga_sw) begin
+		fpio0 <= 1;
+	end
+    else begin
+		fpio0 <= trig;
+	end
 end
 
-always @(posedge adc_dco) begin
-    if (~fpga_sw)
-        fled1 <= 1;
-    else
-        fled1 <= 0;
+always @(posedge decim_clk) begin
+	// readout sequence:
+	// a. At startup: samples_left is 8192 (the size of the buffer) and samples_in and samples_out are both 0. trig should be 0.
+	// b. The FIFO fills up with samples continuously, triggers are ignored. Each incoming sample increases samples_in by 1 until it reaches 4096.
+	// c. samples_in reaches 4096 (half the FIFO), enabling triggering.
+	// d. A trigger condition occurs and trig is set to 1 briefly. Samples_left is set to 4096 (half the FIFO).
+	// e. The FIFO recieves more samples, decrementing samples_left by 1 each time.
+	// f. samples_left reaches 0. samples_out is set to 0. FIFO writing is disabled, FPIO2 goes high to indicate the buffer is triggered and full, and FIFO reading is enabled.
+	// g. The PIC begins clocking samples out of the FIFO. Each samples it clocks out increases samples_out by 1 until 8192.
+	// h. samples_out reaches 8192. FIFO reading is disabled. FPIO2 goes low. samples_in is set to 0, samples_left is set to 0xFFFF, samples_out is set to 0. FIFO writing is enabled. Return to step b.
+	
+	if (fpio0)
+		if ((samples_left == 16'hFFFF) & (samples_in >= 16'd4096)) begin
+			samples_left = 16'd4096;
+		end
+	
+	if (samples_left < 16'hFFFF)
+		if (samples_left > 16'h0)
+			samples_left = samples_left - 16'd1;
+	if (samples_in < 16'd4096)
+		samples_in = samples_in + 16'd1;
+	
+	if (samples_left == 16'h0) begin
+		if (samples_out >= 16'd8192) begin
+			samples_left = 16'hFFFF;
+			samples_in   = 16'd0;
+			reset_so = 1;
+			fpio2 = 0;
+		end
+		else begin
+			reset_so = 0;
+			fpio2 = 1;
+		end
+	end
+	else
+		fpio2 = 0;
+end
+	
+always @(posedge pmdc or posedge reset_so) begin
+	if (~reset_so)
+		samples_out = samples_out + 16'd1;
+	else
+		samples_out = 16'd0;
 end
 
 endmodule

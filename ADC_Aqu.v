@@ -1,5 +1,6 @@
 module ADC_Aqu (
-	input adc_dco,
+	input adc_clk,
+	      adc_dco,
 	      adc_d0a,
 	      adc_d0b,
 	      adc_d1a,
@@ -16,14 +17,14 @@ module ADC_Aqu (
 	      adc_d6b,
 	      adc_d7a,
 	      adc_d7b,
-    input [7:0] decimation,
+    input [15:0] decimation,
 	output reg [7:0] adc_data,
 	output reg decim_clk
 );
 
-reg [32:0] counter;
+reg [15:0] counter;
 
-always @(adc_dco) begin
+always @(posedge adc_clk) begin
 	counter <= counter + 1;
 	if (counter > decimation) begin
 			counter <= 0;

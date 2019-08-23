@@ -1,0 +1,53 @@
+[Device]
+Family=machxo2
+PartType=LCMXO2-4000HC
+PartName=LCMXO2-4000HC-4TG144C
+SpeedGrade=4
+Package=TQFP144
+OperatingCondition=COM
+Status=S
+
+[IP]
+VendorName=Lattice Semiconductor Corporation
+CoreType=LPM
+CoreStatus=Demo
+CoreName=FIFO_DC
+CoreRevision=5.8
+ModuleName=Sample_Data
+SourceFormat=Verilog HDL
+ParameterFileVersion=1.0
+Date=08/22/2019
+Time=09:12:16
+
+[Parameters]
+Verilog=1
+VHDL=0
+EDIF=1
+Destination=Synplicity
+Expression=BusA(0 to 7)
+Order=Big Endian [MSB:LSB]
+IO=0
+FIFOImp=EBR Only
+RDepth=8192
+RWidth=8
+WDepth=8192
+WWidth=8
+regout=0
+CtrlByRdEn=0
+ClockEn=0
+EmpFlg=1
+PeMode=Static - Single Threshold
+PeAssert=200
+PeDeassert=12
+FullFlg=1
+PfMode=Static - Single Threshold
+PfAssert=8000
+PfDeassert=506
+Reset=Async
+Reset1=Sync
+RDataCount=0
+WDataCount=0
+EnECC=0
+
+[Command]
+cmd_line= -w -n Sample_Data -lang verilog -synth lse -bus_exp 7 -bb -arch xo2c00 -type ebfifo -depth 8192 -width 8 -rwidth 8 -no_enable -pe 200 -pf 8000

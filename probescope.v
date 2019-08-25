@@ -29,7 +29,7 @@ module probescope (
 	//output mem_reset,
 	//output mem_rwds,
 	//output mem_psc,
-	output mem_ck,
+	//output mem_ck,
 	
 	output pmd0,
 	output pmd1,
@@ -52,22 +52,22 @@ module probescope (
 	//input fdio0,
 	//output fdio1,
 	
-	output reg fpio0,
+	output fpio0,
 	input fpio1,
 	output reg fpio2,
 	//inout fpio3,
 	//inout fpio4,
 	
-	output fxio0,
-	output fxio1,
-	output fxio2,
-	output fxio3,
-	output fxio4,
-	output fxio5,
-	output fxio6,
-	output fxio7,
+	//output fxio0,
+	//output fxio1,
+	//output fxio2,
+	//output fxio3,
+	//output fxio4,
+	//output fxio5,
+	//output fxio6,
+	//output fxio7,
 	
-	input fpga_sw,
+	//input fpga_sw,
 	output reg fled0,
 	output fled1,
 	output fled2
@@ -96,21 +96,15 @@ assign pmcs1 = 1;
 
 reg reset_so = 0;
 
-assign fxio0 = 0;
-assign fxio1 = 0;
-assign fxio2 = 0;
-assign fxio3 = 0;
-assign fxio4 = 0;
-assign fxio5 = 0;
-assign fxio6 = 0;
-assign fxio7 = 0;
-
 assign fled1 = fpio0;
 assign fled2 = fpio1;
+assign fpio0 = 1;
+
+wire trash1, trash2, trash3, trash4;
 
 ADC_PLL doubler(adc_dco, adc_dbl);
 ADC_Aqu ADC_A(adc_dbl, adc_dco, adc_d0a, adc_d0b, adc_d1a, adc_d1b, adc_d2a, adc_d2b, adc_d3a, adc_d3b, adc_d4a, adc_d4b, adc_d5a, adc_d5b, adc_d6a, adc_d6b, adc_d7a, adc_d7b, 16'h0010, adc_data, decim_clk);
-Sample_Data SD(adc_data, decim_clk, pmdc, wren, rden, 1'b0, 1'b0, good_data);
+Sample_Data SD(adc_data, decim_clk, pmdc, wren, rden, 1'b0, 1'b0, good_data, trash1, trash2, trash3, trash4);
 pic_simple out(.adc_data(good_data), .decim_clk(decim_clk), .pmp_d0(pmd0), .pmp_d1(pmd1), .pmp_d2(pmd2), .pmp_d3(pmd3), .pmp_d4(pmd4), .pmp_d5(pmd5), .pmp_d6(pmd6), .pmp_d7(pmd7), .pmp_dreq(pmdc));
 Trigger trigger (decim_clk, fpio1, adc_data, 8'h0, trig);
 
@@ -126,13 +120,6 @@ always @(posedge adc_dbl) begin
             fled0 <= 1;
         end
     end
-	
-    if (~fpga_sw) begin
-		fpio0 <= 1;
-	end
-    else begin
-		fpio0 <= trig;
-	end
 end
 
 always @(posedge decim_clk) begin

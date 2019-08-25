@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<BaliProject version="3.2" title="probescope" device="LCMXO2-4000HC-4TG144C" default_implementation="impl1">
+<BaliProject version="3.2" title="probescope" device="LCMXO2-4000HC-4MG132C" default_implementation="impl1">
     <Options/>
     <Implementation title="impl1" dir="impl1" description="impl1" synthesis="lse" default_strategy="Strategy1">
-        <Options def_top="ADC_PLL" top="probescope"/>
+        <Options def_top="ADC_FIFO" top="probescope"/>
         <Source name="probescope.v" type="Verilog" type_short="Verilog">
             <Options top_module="probescope"/>
         </Source>
@@ -21,7 +21,16 @@
         <Source name="pic_simple.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
-        <Source name="probescope.lpf" type="Logic Preference" type_short="LPF">
+        <Source name="Trigger.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="Sample_Data.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="impl1/impl1.xcf" type="Programming Project File" type_short="Programming">
+            <Options/>
+        </Source>
+        <Source name="probescope.final.lpf" type="Logic Preference" type_short="LPF">
             <Options/>
         </Source>
     </Implementation>
